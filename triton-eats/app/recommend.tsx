@@ -84,8 +84,14 @@ export default function RecommendScreen() {
               <View style={styles.metaRow}>
                 {rec.walking_minutes != null && (
                   <View style={styles.metaPill}>
-                    <FontAwesome name="clock-o" size={12} color={Colors.light.textSecondary} />
+                    <FontAwesome name="male" size={12} color={Colors.light.textSecondary} />
                     <Text style={styles.metaValue}>{rec.walking_minutes} min walk</Text>
+                  </View>
+                )}
+                {rec.scooter_minutes != null && (
+                  <View style={styles.metaPill}>
+                    <FontAwesome name="bolt" size={12} color={Colors.light.textSecondary} />
+                    <Text style={styles.metaValue}>{rec.scooter_minutes} min scooter</Text>
                   </View>
                 )}
                 {price && (

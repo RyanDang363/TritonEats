@@ -11,6 +11,7 @@ export interface FoodRecommendation {
   total_fat_g: number | null;
   price: string | null;
   walking_minutes: number | null;
+  scooter_minutes: number | null;
   latitude: number | null;
   longitude: number | null;
   reason: string;

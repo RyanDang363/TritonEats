@@ -64,6 +64,7 @@ class FoodRecommendation(BaseModel):
     total_fat_g: Optional[float] = None
     price: Optional[str] = None
     walking_minutes: Optional[int] = None
+    scooter_minutes: Optional[int] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     reason: str = ""
@@ -338,6 +339,7 @@ async def recommend(req: RecommendRequest):
 
         walk_sec = hall_walk_times.get(hall_id)
         walk_min = round(walk_sec / 60) if walk_sec else None
+        scooter_min = max(1, round(walk_min / 3)) if walk_min else None
 
         coords = hall_coords.get(hall_id, (None, None))
 
@@ -352,6 +354,7 @@ async def recommend(req: RecommendRequest):
             total_fat_g=item_data.get("total_fat_g"),
             price=item_data.get("price"),
             walking_minutes=walk_min,
+            scooter_minutes=scooter_min,
             latitude=coords[0],
             longitude=coords[1],
             reason=pick.get("reason", ""),
