@@ -21,12 +21,16 @@ export interface FoodRecommendation {
 export async function getRecommendations(
   userId: string,
   latitude: number,
-  longitude: number
+  longitude: number,
+  craving?: string
 ): Promise<FoodRecommendation[]> {
+  const body: Record<string, unknown> = { user_id: userId, latitude, longitude };
+  if (craving?.trim()) body.craving = craving.trim();
+
   const resp = await fetch(`${API_URL}/recommend`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user_id: userId, latitude, longitude }),
+    body: JSON.stringify(body),
   });
 
   if (!resp.ok) {

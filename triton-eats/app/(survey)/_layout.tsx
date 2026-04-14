@@ -31,7 +31,7 @@ export default function SurveyLayout() {
         }}
       />
       <Stack.Screen name="diet" options={{ title: "Step 2 of 3: Diet" }} />
-      <Stack.Screen name="fitness" options={{ title: "Step 3 of 3: Goals" }} />
+      <Stack.Screen name="fitness" options={{ title: "Step 3 of 3: Goals", headerBackTitle: " " }} />
     </Stack>
   );
 }

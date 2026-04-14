@@ -5,9 +5,13 @@ import {
   Animated,
   Easing,
   Image,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -47,6 +51,7 @@ export default function HomeScreen() {
   const [pinCoord, setPinCoord] = useState<{ latitude: number; longitude: number } | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [openHalls, setOpenHalls] = useState<Set<string>>(new Set());
+  const [craving, setCraving] = useState("");
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -120,7 +125,7 @@ export default function HomeScreen() {
         lng = loc.coords.longitude;
       }
 
-      const recs = await getRecommendations(user.id, lat, lng);
+      const recs = await getRecommendations(user.id, lat, lng, craving || undefined);
 
       router.push({
         pathname: "/recommend",
@@ -138,7 +143,17 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={90}
+    >
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.heroCard}>
         <Image source={require("../../assets/images/logo.png")} style={styles.logo} />
         <Text style={styles.greeting}>What's good, Triton?</Text>
@@ -218,6 +233,24 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.body}>
+        <View style={styles.cravingRow}>
+          <FontAwesome name="search" size={15} color={Colors.light.textTertiary} />
+          <TextInput
+            style={styles.cravingInput}
+            placeholder="Craving something? (e.g. sushi, tacos)"
+            placeholderTextColor={Colors.light.textTertiary}
+            value={craving}
+            onChangeText={setCraving}
+            autoCapitalize="none"
+            returnKeyType="done"
+          />
+          {craving.length > 0 && (
+            <Pressable onPress={() => setCraving("")}>
+              <FontAwesome name="times-circle" size={16} color={Colors.light.textTertiary} />
+            </Pressable>
+          )}
+        </View>
+
         <Pressable
           style={({ pressed }) => [
             styles.findButton,
@@ -247,6 +280,7 @@ export default function HomeScreen() {
         </Pressable>
 
       </View>
+    </ScrollView>
 
       {loading && (
         <View style={styles.loadingOverlay}>
@@ -258,7 +292,7 @@ export default function HomeScreen() {
           <ActivityIndicator color={Colors.gold} size="small" style={{ marginTop: 12 }} />
         </View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -266,6 +300,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 100,
   },
   heroCard: {
     backgroundColor: Colors.navy,
@@ -366,7 +406,28 @@ const styles = StyleSheet.create({
   },
   body: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 12,
+  },
+  cravingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.light.card,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    marginBottom: 12,
+    gap: 10,
+    shadowColor: Colors.light.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  cravingInput: {
+    flex: 1,
+    fontSize: 15,
+    color: Colors.navy,
+    paddingVertical: 12,
   },
   findButton: {
     backgroundColor: Colors.gold,

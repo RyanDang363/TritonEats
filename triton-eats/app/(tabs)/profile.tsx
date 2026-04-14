@@ -146,18 +146,18 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             </View>
-            {profile.allergies.length > 0 && (
-              <View style={styles.prefRow}>
-                <Text style={styles.prefLabel}>Allergies</Text>
-                <Text style={styles.prefValue}>{profile.allergies.join(", ")}</Text>
-              </View>
-            )}
-            {profile.diet_restrictions.length > 0 && (
-              <View style={styles.prefRow}>
-                <Text style={styles.prefLabel}>Diet</Text>
-                <Text style={styles.prefValue}>{profile.diet_restrictions.join(", ")}</Text>
-              </View>
-            )}
+            <View style={styles.prefRow}>
+              <Text style={styles.prefLabel}>Allergies</Text>
+              <Text style={styles.prefValue}>
+                {profile.allergies.length > 0 ? profile.allergies.join(", ") : "None"}
+              </Text>
+            </View>
+            <View style={styles.prefRow}>
+              <Text style={styles.prefLabel}>Diet</Text>
+              <Text style={styles.prefValue}>
+                {profile.diet_restrictions.length > 0 ? profile.diet_restrictions.join(", ") : "None"}
+              </Text>
+            </View>
           </View>
         )}
 

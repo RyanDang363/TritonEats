@@ -121,6 +121,7 @@ class RecommendRequest(BaseModel):
     user_id: str
     latitude: float
     longitude: float
+    craving: Optional[str] = None
 
 
 class FoodRecommendation(BaseModel):
@@ -297,7 +298,7 @@ _hall_name_cache: dict[int, str] = {}
 # ---------------------------------------------------------------------------
 # OpenAI ranking
 # ---------------------------------------------------------------------------
-def rank_with_openai(items: list[dict], profile: dict, hall_walk_times: dict[int, int]) -> list[dict]:
+def rank_with_openai(items: list[dict], profile: dict, hall_walk_times: dict[int, int], craving: Optional[str] = None) -> list[dict]:
     goal = profile.get("fitness_goal", "maintain")
     allergies = profile.get("allergies") or []
     diet_restrictions = profile.get("diet_restrictions") or []
@@ -326,16 +327,28 @@ def rank_with_openai(items: list[dict], profile: dict, hall_walk_times: dict[int
         restriction_lines += f"\nThe student has these food allergies: {', '.join(allergies)}. NEVER recommend items that likely contain these allergens."
     if diet_restrictions:
         restriction_lines += f"\nThe student follows these dietary restrictions: {', '.join(diet_restrictions)}. Only recommend items compatible with ALL of these."
+    if craving:
+        restriction_lines += f"\nThe student is currently craving: {craving}. Strongly prioritize items that match or relate to this craving, but still respect all dietary restrictions and allergies."
+
+    craving_priority = ""
+    if craving:
+        craving_priority = f"\n2. Craving match — the student wants \"{craving}\", so strongly prefer items matching this cuisine or food type"
+        priority_nums = """
+3. Nutritional fit for their goal ({goal}): cutting = low calorie + high protein, bulking = high calorie + high protein, maintain = balanced macros
+4. Proximity (shorter walk is better)
+5. Value (reasonable price)"""
+    else:
+        priority_nums = f"""
+2. Nutritional fit for their goal ({goal}): cutting = low calorie + high protein, bulking = high calorie + high protein, maintain = balanced macros
+3. Proximity (shorter walk is better)
+4. Value (reasonable price)"""
 
     system_prompt = f"""You are a campus dining advisor for UC San Diego students.
 The student's fitness goal is: {goal}.{restriction_lines}
 
 Given the list of available food items with nutrition facts and walking times, pick the 5 best options.
 Prioritize:
-1. Compatibility with the student's allergies and dietary restrictions (this is mandatory — do not recommend anything that violates them)
-2. Nutritional fit for their goal ({goal}): cutting = low calorie + high protein, bulking = high calorie + high protein, maintain = balanced macros
-3. Proximity (shorter walk is better)
-4. Value (reasonable price)
+1. Compatibility with the student's allergies and dietary restrictions (this is mandatory — do not recommend anything that violates them){craving_priority}{priority_nums}
 
 Return ONLY valid JSON — an array of exactly 5 objects with these fields:
 - "name": exact item name from the input
@@ -400,7 +413,7 @@ async def recommend(req: RecommendRequest):
 
     filtered.sort(key=lambda x: hall_walk_times.get(x.get("_dining_hall_id"), 9999))
 
-    picks = rank_with_openai(filtered, profile, hall_walk_times)
+    picks = rank_with_openai(filtered, profile, hall_walk_times, craving=req.craving)
 
     item_lookup = {item["name"]: item for item in filtered}
     hall_lookup = {h["id"]: h["name"] for h in open_halls}
