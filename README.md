@@ -1,4 +1,4 @@
-# TritonEats - built for TransferHacks 2026
+# TritonEats - built for TransferHacks 2026 (Honorable Mention)
 
 **TritonEats** is a UC San Diego campus dining companion: students set dietary preferences and fitness goals, see dining halls on a map, and get personalized food recommendations based on nutrition, allergies, walking distance, and optional cravings.
 
@@ -6,21 +6,21 @@ This repo contains the **TritonEats** mobile app and its **Python API**.
 
 ## Stack
 
-| Layer | Technologies |
-|--------|----------------|
-| Mobile app | [Expo](https://expo.dev/) (SDK 54), [React Native](https://reactnative.dev/), [expo-router](https://docs.expo.dev/router/introduction/), TypeScript |
-| Maps & location | `react-native-maps`, `expo-location` |
-| Auth & data | [Supabase](https://supabase.com/) (Auth, Postgres, Row Level Security) |
-| API | [FastAPI](https://fastapi.tiangolo.com/), [Uvicorn](https://www.uvicorn.org/), [Pydantic](https://docs.pydantic.dev/) v2 |
-| Integrations | OpenAI (menu ranking / reasons), Google Routes API (walking times), Supabase Python client |
+| Layer           | Technologies                                                                                                                                        |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mobile app      | [Expo](https://expo.dev/) (SDK 54), [React Native](https://reactnative.dev/), [expo-router](https://docs.expo.dev/router/introduction/), TypeScript |
+| Maps & location | `react-native-maps`, `expo-location`                                                                                                                |
+| Auth & data     | [Supabase](https://supabase.com/) (Auth, Postgres, Row Level Security)                                                                              |
+| API             | [FastAPI](https://fastapi.tiangolo.com/), [Uvicorn](https://www.uvicorn.org/), [Pydantic](https://docs.pydantic.dev/) v2                            |
+| Integrations    | OpenAI (menu ranking / reasons), Google Routes API (walking times), Supabase Python client                                                          |
 
 Environment variables are loaded from a **repo root** `.env` (API, via `load_dotenv` in `api/main.py`) and `triton-eats/.env` (Expo). Use the same **`EXPO_PUBLIC_`** names in both. See **`triton-eats/.env.example`** for the Expo-side template; create the root `.env` with the same keys (plus `OPENAI_API_KEY`, `GOOGLE_ROUTES_API_KEY`, and optionally `SUPABASE_SERVICE_ROLE_KEY`).
 
 ## Prerequisites
 
-- Node.js 18+ and npm  
-- Python 3.11+ (3.12+ recommended)  
-- Supabase project with `user_profiles`, `dining_halls`, `stations`, `menu_items`, `favorites` (see `misc/` for migration helpers)  
+- Node.js 18+ and npm
+- Python 3.11+ (3.12+ recommended)
+- Supabase project with `user_profiles`, `dining_halls`, `stations`, `menu_items`, `favorites` (see `misc/` for migration helpers)
 - API keys: OpenAI, Google Routes, Supabase URL + keys (service role on the server for profile reads if RLS blocks anon)
 
 ## How to run TritonEats
@@ -61,7 +61,7 @@ cp .env.example .env
 
 Edit `triton-eats/.env`:
 
-- `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` — from your Supabase project  
+- `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` — from your Supabase project
 - `EXPO_PUBLIC_API_URL` — where the app will reach the API: `http://localhost:8000` for **iOS Simulator** on the same Mac; `http://<your-mac-LAN-ip>:8000` for **Expo Go on a physical device** (same Wi‑Fi as your computer); **Android emulator** often needs `http://10.0.2.2:8000` instead of `localhost`
 
 Then:
